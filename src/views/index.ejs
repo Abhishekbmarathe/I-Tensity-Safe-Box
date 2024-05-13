@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Input Form</title>
+    <style>
+        html,
+        body {
+            background-color: #1a1a1a;
+            /* Dark background */
+            color: #fff;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            /* Center align content */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            /* width: 100%; */
+            height: 100%;
+        }
+
+        .container {
+            max-width: 400px;
+            margin: 50px auto;
+            border: 2px solid #ff0000;
+            /* Red border */
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
+            /* Red shadow */
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            margin: 5px 0;
+            width: 80%;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            background-color: #1a1a1a;
+            /* Dark background */
+            color: #fff;
+        }
+
+        input[type="submit"],
+        input[type="reset"] {
+            padding: 10px 20px;
+            margin-top: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #ff0000;
+            /* Red button */
+            color: #fff;
+            cursor: pointer;
+        }
+
+        input[type="submit"]:hover,
+        input[type="reset"]:hover {
+            background-color: #990000;
+            /* Darker red on hover */
+        }
+
+        h1 {
+            text-shadow: 4px 4px 2px rgba(255, 0, 0, 0.7);
+            /* Red shadow */
+        }
+
+        .error {
+            color: #ff0000;
+            /* Red text */
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .success {
+            color: #00ff00;
+            /* Green text */
+            font-weight: bold;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h1>I-Tensity Safe Box</h1>
+        <form id="numberForm">
+            <input type="number" id="number0" name="number0" placeholder="Enter Starting Key Value" required min="0">
+            <input type="number" id="number1" name="number1" placeholder="Enter Output of Debug 1" required min="0">
+            <input type="number" id="number2" name="number2" placeholder="Enter Output of Debug 2" required min="0">
+            <input type="number" id="number3" name="number3" placeholder="Enter Output of Debug 3" required min="0">
+            <input type="submit" value="Unlock">
+            <input type="reset" value="Reset">
+            <div id="result" class="error"></div> <!-- Placeholder for result message -->
+        </form>
+    </div>
+
+    <script>
+        document.querySelectorAll("input[type='number']").forEach(function (input) {
+            input.addEventListener("input", function () {
+                if (this.value.length > 15) {
+                    this.value = this.value.slice(0, 15); // Limit input length to 15 characters
+                }
+            });
+        });
+
+        document.getElementById("numberForm").addEventListener("submit", function (event) {
+            event.preventDefault();
+            const inputData = {
+                number0: document.getElementById("number0").value.toString(),
+                number1: document.getElementById("number1").value.toString(),
+                number2: document.getElementById("number2").value.toString(),
+                number3: document.getElementById("number3").value.toString()
+            };
+
+            fetch('/validate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(inputData)
+            })
+                .then(response => response.json())
+                .then(data => {
+                    var resultDiv = document.getElementById("result");
+                    if (data.success) {
+                        resultDiv.textContent = "Access Granted!";
+                        resultDiv.className = "success";
+                    } else {
+                        resultDiv.textContent = "Access Denied! Please try again.";
+                        resultDiv.className = "error";
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
+        });
+
+    </script>
+
+</body>
+
+</html>
